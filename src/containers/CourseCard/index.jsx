@@ -22,17 +22,19 @@ export const CourseCard = ({
     <div className="mb-4.5 course-card" id={cardId} data-testid="CourseCard">
       <Card orientation={orientation}>
         <div className="d-flex flex-column w-100">
-          <div {...(!isCollapsed && { className: 'd-flex' })}>
+          <div {...(!isCollapsed && { className: 'd-flex align-items-center' })}>
             <CourseCardImage cardId={cardId} orientation="horizontal" />
-            <Card.Body>
-              <Card.Header
-                title={<CourseCardTitle cardId={cardId} />}
-                actions={<CourseCardMenu cardId={cardId} />}
-              />
-              <Card.Section className="pt-0">
-                <CourseCardDetails cardId={cardId} />
-              </Card.Section>
-              <Card.Footer orientation={orientation}>
+            <Card.Body className="d-flex flex-column flex-md-row align-items-md-center justify-content-md-between w-100 py-3 px-4">
+              <div className="d-flex flex-column justify-content-center flex-grow-1 pr-md-4">
+                <Card.Header
+                  title={<CourseCardTitle cardId={cardId} />}
+                  actions={<CourseCardMenu cardId={cardId} />}
+                />
+                <Card.Section className="pt-0">
+                  <CourseCardDetails cardId={cardId} />
+                </Card.Section>
+              </div>
+              <Card.Footer orientation={orientation} className="flex-shrink-0 mt-3 mt-md-0 border-0 p-0 bg-transparent">
                 <CourseCardActions cardId={cardId} />
               </Card.Footer>
             </Card.Body>

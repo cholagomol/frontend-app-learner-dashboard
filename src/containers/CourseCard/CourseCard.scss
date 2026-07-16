@@ -43,10 +43,7 @@
 
     // Adjust card body layout
     .card-body {
-      padding: 16px 20px !important;
-      display: flex !important;
-      flex-direction: column !important;
-      justify-content: center !important;
+      // Let React Bootstrap utility classes handle layout
     }
 
     // Heading and Title
