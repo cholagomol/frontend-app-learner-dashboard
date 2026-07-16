@@ -122,7 +122,7 @@ export const LookingForChallengeWidget = () => {
       <Card id="looking-for-challenge-widget" className="p-3 text-center border-light shadow-sm">
         <Card.Body>
           <div className="spinner-border spinner-border-sm text-primary mr-2" role="status" />
-          <span className="text-muted small">กำลังโหลดข้อมูลหลักสูตรแนะนำ...</span>
+          <span className="text-muted small">Loading recommended courses...</span>
         </Card.Body>
       </Card>
     );
@@ -176,11 +176,11 @@ export const LookingForChallengeWidget = () => {
             </div>
           </div>
           <Card.Body className="p-3">
-            <h4 className="card-title h6 mb-1 text-truncate" title={course.name} style={{ fontWeight: 600 }}>
+            <h4 className="card-title h6 mb-1 text-truncate" title={course.name} style={{ fontWeight: 'bold' }}>
               {course.name}
             </h4>
             <p className="card-text small text-muted mb-3">
-              รหัสวิชา: {course.number}
+              Course Code: {course.number}
             </p>
             <Button
               variant="brand"
@@ -190,7 +190,7 @@ export const LookingForChallengeWidget = () => {
               className="w-100 d-flex justify-content-center align-items-center"
               style={{ fontSize: '0.8rem', padding: '6px 12px' }}
             >
-              ดูรายละเอียดคอร์ส {arrowIcon}
+              View Details {arrowIcon}
             </Button>
           </Card.Body>
         </div>
@@ -206,7 +206,7 @@ export const LookingForChallengeWidget = () => {
         <div className="mb-4">
           <h3 className="h6 mb-2 font-weight-bold d-flex align-items-center" style={{ color: '#0f172a' }}>
             <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', marginRight: '8px' }} />
-            หลักสูตรใหม่ล่าสุด
+            Latest Course
           </h3>
           {renderCourseCard(latestCourse)}
         </div>
@@ -218,9 +218,9 @@ export const LookingForChallengeWidget = () => {
           <h3 className="h6 mb-2 font-weight-bold" style={{ color: '#0f172a', lineHeight: '1.4' }}>
             <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#3b82f6', marginRight: '8px' }} />
             {sourceEnrolledCourse ? (
-              <>เนื่องจากคุณกำลังเรียน <span style={{ color: '#3b82f6' }}>"{sourceEnrolledCourse.course?.courseName || sourceEnrolledCourse.name}"</span> สนใจวิชานี้เพิ่มไหม?</>
+              <>Since you are enrolled in <span style={{ color: '#3b82f6' }}>"{sourceEnrolledCourse.course?.courseName || sourceEnrolledCourse.name}"</span>, would you be interested in this course?</>
             ) : (
-              <>หลักสูตรแนะนำสำหรับคุณ</>
+              <>Recommended for you</>
             )}
           </h3>
           {renderCourseCard(recommendedCourse)}
@@ -234,7 +234,7 @@ export const LookingForChallengeWidget = () => {
           className="small d-inline-flex align-items-center"
           style={{ textDecoration: 'underline' }}
         >
-          ดูคอร์สทั้งหมดเพิ่มเติม {arrowIcon}
+          View all courses {arrowIcon}
         </Hyperlink>
       </div>
     </div>
