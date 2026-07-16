@@ -163,19 +163,16 @@ export const LookingForChallengeWidget = () => {
       : moreCoursesSVG;
 
     return (
-      <Card key={courseId} className="recommended-course-card shadow-sm border-light mb-3">
-        <div className="d-flex flex-column">
-          <div style={{ position: 'relative', width: '100%', height: '110px', overflow: 'hidden' }}>
-            <Card.ImageCap 
-              src={imgUrl} 
-              srcAlt={course.name} 
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            />
-            <div className="badge badge-primary" style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.75rem', padding: '4px 8px', backgroundColor: '#3b82f6' }}>
-              {course.org}
-            </div>
-          </div>
-          <Card.Body className="p-3">
+      <Card key={courseId} className="recommended-course-card shadow-sm border-light mb-3" style={{ position: 'relative' }}>
+        <Card.ImageCap 
+          src={imgUrl} 
+          srcAlt={course.name} 
+          style={{ width: '100%', height: '110px', objectFit: 'cover', display: 'block' }}
+        />
+        <div className="badge badge-primary" style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.75rem', padding: '4px 8px', backgroundColor: '#3b82f6', zIndex: 10 }}>
+          {course.org}
+        </div>
+        <Card.Body className="p-3">
             <h4 className="card-title h5 mb-1 text-truncate" title={course.name} style={{ fontWeight: 'bold' }}>
               {course.name}
             </h4>
@@ -193,7 +190,6 @@ export const LookingForChallengeWidget = () => {
               View Details {arrowIcon}
             </Button>
           </Card.Body>
-        </div>
       </Card>
     );
   };
