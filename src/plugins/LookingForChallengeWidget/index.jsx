@@ -32,17 +32,47 @@ export const LookingForChallengeWidget = () => {
         const response = await client.get(`${getConfig().LMS_BASE_URL}/api/courses/v1/courses/`);
         const allCourses = response?.data?.results || [];
 
-        // Get enrolled course IDs
-        const enrolledIds = new Set(
-          (learnerData?.courses || []).map(c => c?.courseRun?.courseId || c?.id || c?.course_id)
-        );
+        // 1. Get enrolled course IDs and their categories (based on course number prefix)
+        const enrolledIds = new Set();
+        const enrolledCategories = new Set();
 
-        // Filter out enrolled courses
-        const filtered = allCourses.filter(
+        (learnerData?.courses || []).forEach(c => {
+          // Extract enrolled course ID
+          const enrolledId = c?.courseRun?.courseId || c?.id || c?.course_id || c?.course?.id;
+          if (enrolledId) enrolledIds.add(enrolledId);
+
+          // Extract course number (e.g. 'bc001', 'cs101') and get category prefix ('bc', 'cs')
+          const courseNum = c?.course?.number || c?.number || c?.courseRun?.number;
+          if (courseNum) {
+            const match = String(courseNum).match(/^[a-zA-Z]+/);
+            if (match) enrolledCategories.add(match[0].toLowerCase());
+          }
+        });
+
+        // 2. Filter out enrolled courses from the catalog
+        const nonEnrolled = allCourses.filter(
           course => !enrolledIds.has(course.id) && !enrolledIds.has(course.course_id)
         );
 
-        setRecommendedCourses(filtered);
+        // 3. Find non-enrolled courses in the same categories
+        let matchedRecommendations = nonEnrolled.filter(course => {
+          const courseNum = course.number;
+          if (!courseNum) return false;
+          const match = String(courseNum).match(/^[a-zA-Z]+/);
+          const cat = match ? match[0].toLowerCase() : '';
+          return enrolledCategories.has(cat);
+        });
+
+        // 4. Fallback: If no courses are in the same category, recommend any non-enrolled courses
+        if (matchedRecommendations.length === 0) {
+          matchedRecommendations = nonEnrolled;
+        }
+
+        // 5. Randomize (shuffle) and limit to max 3 courses
+        const shuffled = [...matchedRecommendations].sort(() => 0.5 - Math.random());
+        const limited = shuffled.slice(0, 3);
+
+        setRecommendedCourses(limited);
       } catch (err) {
         console.error('Failed to fetch recommended courses:', err);
       } finally {
