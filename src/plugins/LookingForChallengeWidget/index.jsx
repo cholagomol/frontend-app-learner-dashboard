@@ -200,9 +200,9 @@ export const LookingForChallengeWidget = () => {
       {/* SLOT 1: Latest Course */}
       {latestCourse && (
         <div className="mb-4">
-          <h3 className="h5 mb-2 font-weight-bold d-flex align-items-center" style={{ color: '#0f172a' }}>
+          <h3 className="h4 mb-2 font-weight-bold d-flex align-items-center" style={{ color: '#0f172a' }}>
             <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', marginRight: '8px' }} />
-            Latest Course
+            New Course
           </h3>
           {renderCourseCard(latestCourse)}
         </div>
@@ -211,7 +211,7 @@ export const LookingForChallengeWidget = () => {
       {/* SLOT 2: Category Match Recommendation */}
       {recommendedCourse && (
         <div className="mb-3">
-          <h3 className="h5 mb-2 font-weight-bold" style={{ color: '#0f172a', lineHeight: '1.4' }}>
+          <h3 className="h4 mb-2 font-weight-bold" style={{ color: '#0f172a', lineHeight: '1.4' }}>
             <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#3b82f6', marginRight: '8px' }} />
             {sourceEnrolledCourse ? (
               <>Since you are enrolled in <span style={{ color: '#3b82f6' }}>"{sourceEnrolledCourse.course?.courseName || sourceEnrolledCourse.name}"</span>, would you be interested in this course?</>
