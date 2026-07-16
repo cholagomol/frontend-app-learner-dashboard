@@ -171,15 +171,15 @@ export const LookingForChallengeWidget = () => {
               alt={course.name} 
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
-            <div className="badge badge-primary" style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.7rem', padding: '4px 8px', backgroundColor: '#3b82f6' }}>
+            <div className="badge badge-primary" style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.75rem', padding: '4px 8px', backgroundColor: '#3b82f6' }}>
               {course.org}
             </div>
           </div>
           <Card.Body className="p-3">
-            <h4 className="card-title h6 mb-1 text-truncate" title={course.name} style={{ fontWeight: 'bold' }}>
+            <h4 className="card-title h5 mb-1 text-truncate" title={course.name} style={{ fontWeight: 'bold' }}>
               {course.name}
             </h4>
-            <p className="card-text small text-muted mb-3">
+            <p className="card-text text-muted mb-3" style={{ fontSize: '0.9rem' }}>
               Course Code: {course.number}
             </p>
             <Button
@@ -188,7 +188,7 @@ export const LookingForChallengeWidget = () => {
               href={detailsUrl}
               size="sm"
               className="w-100 d-flex justify-content-center align-items-center"
-              style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+              style={{ fontSize: '0.9rem', padding: '8px 12px' }}
             >
               View Details {arrowIcon}
             </Button>
@@ -204,7 +204,7 @@ export const LookingForChallengeWidget = () => {
       {/* SLOT 1: Latest Course */}
       {latestCourse && (
         <div className="mb-4">
-          <h3 className="h6 mb-2 font-weight-bold d-flex align-items-center" style={{ color: '#0f172a' }}>
+          <h3 className="h5 mb-2 font-weight-bold d-flex align-items-center" style={{ color: '#0f172a' }}>
             <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', marginRight: '8px' }} />
             Latest Course
           </h3>
@@ -215,7 +215,7 @@ export const LookingForChallengeWidget = () => {
       {/* SLOT 2: Category Match Recommendation */}
       {recommendedCourse && (
         <div className="mb-3">
-          <h3 className="h6 mb-2 font-weight-bold" style={{ color: '#0f172a', lineHeight: '1.4' }}>
+          <h3 className="h5 mb-2 font-weight-bold" style={{ color: '#0f172a', lineHeight: '1.4' }}>
             <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#3b82f6', marginRight: '8px' }} />
             {sourceEnrolledCourse ? (
               <>Since you are enrolled in <span style={{ color: '#3b82f6' }}>"{sourceEnrolledCourse.course?.courseName || sourceEnrolledCourse.name}"</span>, would you be interested in this course?</>
@@ -231,8 +231,8 @@ export const LookingForChallengeWidget = () => {
         <Hyperlink
           variant="muted"
           destination={hyperlinkDestination}
-          className="small d-inline-flex align-items-center"
-          style={{ textDecoration: 'underline' }}
+          className="d-inline-flex align-items-center"
+          style={{ textDecoration: 'underline', fontSize: '0.95rem' }}
         >
           View all courses {arrowIcon}
         </Hyperlink>
