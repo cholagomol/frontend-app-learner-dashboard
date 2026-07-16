@@ -166,10 +166,10 @@ export const LookingForChallengeWidget = () => {
       <Card key={courseId} className="recommended-course-card shadow-sm border-light mb-3">
         <div className="d-flex flex-column">
           <div style={{ position: 'relative', width: '100%', height: '110px', overflow: 'hidden' }}>
-            <img 
+            <Card.ImageCap 
               src={imgUrl} 
-              alt={course.name} 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              srcAlt={course.name} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
             <div className="badge badge-primary" style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.75rem', padding: '4px 8px', backgroundColor: '#3b82f6' }}>
               {course.org}
