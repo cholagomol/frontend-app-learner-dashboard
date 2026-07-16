@@ -6,10 +6,10 @@
   padding: 0 var(--pgn-spacing-spacer-3) 0 var(--pgn-spacing-spacer-1);
 
   &.not-collapsed {
-    padding-top: var(--pgn-spacing-spacer-2);
+    padding-top: 0 !important; // Force override production theme's 80px padding-top from core.min.css
 
     & >:first-child {
-      margin-top: var(--pgn-spacing-spacer-2);
+      margin-top: var(--pgn-spacing-spacer-2) !important;
     }
   }
 }
