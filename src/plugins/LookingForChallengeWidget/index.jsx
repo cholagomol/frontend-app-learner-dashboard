@@ -19,7 +19,9 @@ export const arrowIcon = (<Icon className="mx-1" src={ArrowForward} />);
 export const LookingForChallengeWidget = () => {
   const { formatMessage } = useIntl();
   const { data: learnerData } = useInitializeLearnerHome();
-  const [recommendedCourses, setRecommendedCourses] = useState([]);
+  const [latestCourse, setLatestCourse] = useState(null);
+  const [recommendedCourse, setRecommendedCourse] = useState(null);
+  const [sourceEnrolledCourse, setSourceEnrolledCourse] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const courseSearchUrl = learnerData?.platformSettings?.courseSearchUrl || '';
@@ -32,47 +34,77 @@ export const LookingForChallengeWidget = () => {
         const response = await client.get(`${getConfig().LMS_BASE_URL}/api/courses/v1/courses/`);
         const allCourses = response?.data?.results || [];
 
-        // 1. Get enrolled course IDs and their categories (based on course number prefix)
+        // 1. Get enrolled course IDs and categories
+        const enrolledCourses = learnerData?.courses || [];
         const enrolledIds = new Set();
-        const enrolledCategories = new Set();
 
-        (learnerData?.courses || []).forEach(c => {
-          // Extract enrolled course ID
+        enrolledCourses.forEach(c => {
           const enrolledId = c?.courseRun?.courseId || c?.id || c?.course_id || c?.course?.id;
           if (enrolledId) enrolledIds.add(enrolledId);
-
-          // Extract course number (e.g. 'bc001', 'cs101') and get category prefix ('bc', 'cs')
-          const courseNum = c?.course?.number || c?.number || c?.courseRun?.number;
-          if (courseNum) {
-            const match = String(courseNum).match(/^[a-zA-Z]+/);
-            if (match) enrolledCategories.add(match[0].toLowerCase());
-          }
         });
 
-        // 2. Filter out enrolled courses from the catalog
+        // 2. Filter catalog to non-enrolled courses
         const nonEnrolled = allCourses.filter(
           course => !enrolledIds.has(course.id) && !enrolledIds.has(course.course_id)
         );
 
-        // 3. Find non-enrolled courses in the same categories
-        let matchedRecommendations = nonEnrolled.filter(course => {
-          const courseNum = course.number;
-          if (!courseNum) return false;
-          const match = String(courseNum).match(/^[a-zA-Z]+/);
-          const cat = match ? match[0].toLowerCase() : '';
-          return enrolledCategories.has(cat);
-        });
-
-        // 4. Fallback: If no courses are in the same category, recommend any non-enrolled courses
-        if (matchedRecommendations.length === 0) {
-          matchedRecommendations = nonEnrolled;
+        // 3. Find SLOT 1: Latest Course
+        let latest = null;
+        if (nonEnrolled.length > 0) {
+          const sortedByDate = [...nonEnrolled].sort((a, b) => {
+            const dateA = a.start ? new Date(a.start).getTime() : 0;
+            const dateB = b.start ? new Date(b.start).getTime() : 0;
+            return dateB - dateA;
+          });
+          latest = sortedByDate[0];
+          setLatestCourse(latest);
         }
 
-        // 5. Randomize (shuffle) and limit to max 3 courses
-        const shuffled = [...matchedRecommendations].sort(() => 0.5 - Math.random());
-        const limited = shuffled.slice(0, 3);
+        // 4. Find SLOT 2: Category Match Recommendation
+        let recommended = null;
+        let sourceEnrolled = null;
 
-        setRecommendedCourses(limited);
+        for (const enrolled of enrolledCourses) {
+          const courseNum = enrolled?.course?.number || enrolled?.number || enrolled?.courseRun?.number;
+          if (!courseNum) continue;
+
+          const match = String(courseNum).match(/^[a-zA-Z]+/);
+          if (!match) continue;
+
+          const enrolledCat = match[0].toLowerCase();
+
+          // Find a matching course that is not enrolled and not the latest course
+          const categoryMatches = nonEnrolled.filter(course => {
+            if (latest && (course.id === latest.id || course.course_id === latest.course_id)) {
+              return false;
+            }
+            const cMatch = String(course.number || '').match(/^[a-zA-Z]+/);
+            const cCat = cMatch ? cMatch[0].toLowerCase() : '';
+            return cCat === enrolledCat;
+          });
+
+          if (categoryMatches.length > 0) {
+            sourceEnrolled = enrolled;
+            recommended = categoryMatches[Math.floor(Math.random() * categoryMatches.length)];
+            break;
+          }
+        }
+
+        // Fallback for Slot 2 if no category match is found
+        if (!recommended && nonEnrolled.length > 0) {
+          const remaining = nonEnrolled.filter(course => {
+            if (latest && (course.id === latest.id || course.course_id === latest.course_id)) {
+              return false;
+            }
+            return true;
+          });
+          if (remaining.length > 0) {
+            recommended = remaining[Math.floor(Math.random() * remaining.length)];
+          }
+        }
+
+        setRecommendedCourse(recommended);
+        setSourceEnrolledCourse(sourceEnrolled);
       } catch (err) {
         console.error('Failed to fetch recommended courses:', err);
       } finally {
@@ -90,13 +122,14 @@ export const LookingForChallengeWidget = () => {
       <Card id="looking-for-challenge-widget" className="p-3 text-center border-light shadow-sm">
         <Card.Body>
           <div className="spinner-border spinner-border-sm text-primary mr-2" role="status" />
-          <span className="text-muted small">กำลังโหลดคอร์สแนะนำ...</span>
+          <span className="text-muted small">กำลังโหลดข้อมูลหลักสูตรแนะนำ...</span>
         </Card.Body>
       </Card>
     );
   }
 
-  if (recommendedCourses.length === 0) {
+  // If there are no courses at all to recommend, show default fallback widget
+  if (!latestCourse && !recommendedCourse) {
     return (
       <Card orientation="horizontal" id="looking-for-challenge-widget">
         <Card.ImageCap
@@ -122,56 +155,79 @@ export const LookingForChallengeWidget = () => {
     );
   }
 
+  const renderCourseCard = (course) => {
+    const courseId = course.id || course.course_id;
+    const detailsUrl = baseAppUrl(`/courses/${courseId}/about`);
+    const imgUrl = course.media?.course_image?.uri 
+      ? baseAppUrl(course.media.course_image.uri)
+      : moreCoursesSVG;
+
+    return (
+      <Card key={courseId} className="recommended-course-card shadow-sm border-light mb-3">
+        <div className="d-flex flex-column">
+          <div style={{ position: 'relative', width: '100%', height: '110px', overflow: 'hidden' }}>
+            <img 
+              src={imgUrl} 
+              alt={course.name} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+            <div className="badge badge-primary" style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.7rem', padding: '4px 8px', backgroundColor: '#3b82f6' }}>
+              {course.org}
+            </div>
+          </div>
+          <Card.Body className="p-3">
+            <h4 className="card-title h6 mb-1 text-truncate" title={course.name} style={{ fontWeight: 600 }}>
+              {course.name}
+            </h4>
+            <p className="card-text small text-muted mb-3">
+              รหัสวิชา: {course.number}
+            </p>
+            <Button
+              variant="brand"
+              as="a"
+              href={detailsUrl}
+              size="sm"
+              className="w-100 d-flex justify-content-center align-items-center"
+              style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+            >
+              ดูรายละเอียดคอร์ส {arrowIcon}
+            </Button>
+          </Card.Body>
+        </div>
+      </Card>
+    );
+  };
+
   return (
     <div id="recommended-courses-widget" className="w-100">
-      <h3 className="h5 mb-3 font-weight-bold" style={{ color: '#1a2530' }}>
-        คอร์สแนะนำสำหรับคุณ
-      </h3>
-      <div className="d-flex flex-column">
-        {recommendedCourses.map(course => {
-          const courseId = course.id || course.course_id;
-          const detailsUrl = baseAppUrl(`/courses/${courseId}/about`);
-          const imgUrl = course.media?.course_image?.uri 
-            ? baseAppUrl(course.media.course_image.uri)
-            : moreCoursesSVG;
+      
+      {/* SLOT 1: Latest Course */}
+      {latestCourse && (
+        <div className="mb-4">
+          <h3 className="h6 mb-2 font-weight-bold d-flex align-items-center" style={{ color: '#0f172a' }}>
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#22c55e', marginRight: '8px' }} />
+            หลักสูตรใหม่ล่าสุด
+          </h3>
+          {renderCourseCard(latestCourse)}
+        </div>
+      )}
 
-          return (
-            <Card key={courseId} className="recommended-course-card shadow-sm border-light mb-3">
-              <div className="d-flex flex-column">
-                <div style={{ position: 'relative', width: '100%', height: '110px', overflow: 'hidden' }}>
-                  <img 
-                    src={imgUrl} 
-                    alt={course.name} 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                  <div className="badge badge-primary" style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.7rem', padding: '4px 8px', backgroundColor: '#3b82f6' }}>
-                    {course.org}
-                  </div>
-                </div>
-                <Card.Body className="p-3">
-                  <h4 className="card-title h6 mb-1 text-truncate" title={course.name} style={{ fontWeight: 600 }}>
-                    {course.name}
-                  </h4>
-                  <p className="card-text small text-muted mb-3">
-                    รหัสวิชา: {course.number}
-                  </p>
-                  <Button
-                    variant="brand"
-                    as="a"
-                    href={detailsUrl}
-                    size="sm"
-                    className="w-100 d-flex justify-content-center align-items-center"
-                    style={{ fontSize: '0.8rem', padding: '6px 12px' }}
-                  >
-                    ดูรายละเอียดคอร์ส {arrowIcon}
-                  </Button>
-                </Card.Body>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-      <div className="text-center mt-2">
+      {/* SLOT 2: Category Match Recommendation */}
+      {recommendedCourse && (
+        <div className="mb-3">
+          <h3 className="h6 mb-2 font-weight-bold" style={{ color: '#0f172a', lineHeight: '1.4' }}>
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#3b82f6', marginRight: '8px' }} />
+            {sourceEnrolledCourse ? (
+              <>เนื่องจากคุณกำลังเรียน <span style={{ color: '#3b82f6' }}>"{sourceEnrolledCourse.course?.courseName || sourceEnrolledCourse.name}"</span> สนใจวิชานี้เพิ่มไหม?</>
+            ) : (
+              <>หลักสูตรแนะนำสำหรับคุณ</>
+            )}
+          </h3>
+          {renderCourseCard(recommendedCourse)}
+        </div>
+      )}
+
+      <div className="text-center mt-3">
         <Hyperlink
           variant="muted"
           destination={hyperlinkDestination}
