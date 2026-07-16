@@ -167,7 +167,7 @@ export const LookingForChallengeWidget = () => {
         <Card.ImageCap 
           src={imgUrl} 
           srcAlt={course.name} 
-          style={{ width: '100%', height: '110px', objectFit: 'cover', display: 'block' }}
+          style={{ width: '100%', height: '140px', objectFit: 'contain', backgroundColor: '#f8fafc', display: 'block' }}
         />
         <div className="badge badge-primary" style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.75rem', padding: '4px 8px', backgroundColor: '#3b82f6', zIndex: 10 }}>
           {course.org}
