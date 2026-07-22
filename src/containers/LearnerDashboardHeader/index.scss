@@ -45,3 +45,32 @@
   }
 }
 
+// Fix mobile header menu disappearing/collapsing bug
+.site-header-mobile {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+
+  > div.w-100 {
+    width: auto !important; // Override the w-100 class that collapses the flex layout
+    flex: 1 1 0% !important; // Distribute space equally so elements don't get squished to 0 width
+    min-width: 0;
+
+    // Ensure nested menus or items display correctly inside the flex-grow wrappers
+    &.justify-content-start {
+      display: flex !important;
+      justify-content: flex-start !important;
+    }
+
+    &.justify-content-center {
+      display: flex !important;
+      justify-content: center !important;
+    }
+
+    &.justify-content-end {
+      display: flex !important;
+      justify-content: flex-end !important;
+    }
+  }
+}
+
