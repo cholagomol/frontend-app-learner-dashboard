@@ -180,7 +180,7 @@ export const LookingForChallengeWidget = () => {
               Course Code: {course.number}
             </p>
             <Button
-              variant="brand"
+              variant="primary"
               as="a"
               href={detailsUrl}
               size="sm"
