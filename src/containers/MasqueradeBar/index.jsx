@@ -11,6 +11,8 @@ import {
   FormGroup,
   StatefulButton,
   Icon,
+  breakpoints,
+  useWindowSize,
 } from '@openedx/paragon';
 import { Close, PersonSearch } from '@openedx/paragon/icons';
 
@@ -27,6 +29,9 @@ export const MasqueradeBar = () => {
   const { authenticatedUser } = React.useContext(AppContext);
   const [masqueradeInput, setMasqueradeInput] = React.useState('');
   const canMasquerade = authenticatedUser?.administrator;
+  // Phones get Paragon's small input and button; the spacing that goes with them is in index.scss
+  const { width } = useWindowSize();
+  const controlSize = width < breakpoints.small.maxWidth ? 'sm' : undefined;
   const { masqueradeUser, setMasqueradeUser } = useMasquerade();
   const handleMasqueradeInputChange = (e) => setMasqueradeInput(e.target.value);
   const handleClearMasquerade = () => {
@@ -79,6 +84,7 @@ export const MasqueradeBar = () => {
                 onChange={handleMasqueradeInputChange}
                 floatingLabel={formatMessage(messages.StudentNameInput)}
                 aria-labelledby="masquerade-form-label"
+                size={controlSize}
               />
               {isMasqueradingFailed && (
                 <FormControlFeedback type="invalid" hasIcon={false}>
@@ -93,7 +99,8 @@ export const MasqueradeBar = () => {
               labels={{
                 default: formatMessage(messages.SubmitButton),
               }}
-              className="mr-3"
+              className={controlSize ? undefined : 'mr-3'}
+              size={controlSize}
               state={isMasqueradingPending ? 'pending' : 'default'}
               type="submit"
             />

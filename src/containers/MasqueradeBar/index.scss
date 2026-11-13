@@ -34,3 +34,40 @@
     padding: var(--pgn-spacing-spacer-3) var(--pgn-spacing-spacer-4);
   }
 }
+
+// Phones: tight spacing so the username field keeps a usable width next to the small input and
+// button that index.jsx renders below the same width (breakpoints.small.maxWidth).
+// A plain media query on purpose: this build leaves the --pgn-size-breakpoint-* custom media
+// above uncompiled, so browsers skip that block.
+@media (max-width: 767.98px) {
+  .masquerade-bar {
+    gap: var(--pgn-spacing-spacer-2);
+    margin: auto;
+    // More room on top: the input's label floats up over its top border while typing, and with
+    // less than this it ran into the header above the bar.
+    padding: 1.25rem 0.375rem var(--pgn-spacing-spacer-2);
+
+    .masquerade-form-label {
+      min-height: 2.25rem; // height of a small Paragon input, keeps the label centred on it
+      margin-right: 0;
+      padding: 0;
+      font-size: 0.875rem;
+
+      &>.pgn__icon {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: var(--pgn-spacing-spacer-1);
+      }
+    }
+
+    .masquerade-form-input {
+      min-width: 0;
+    }
+
+    .masquerade-chip {
+      min-width: 0;
+      padding: var(--pgn-spacing-spacer-1) var(--pgn-spacing-spacer-2);
+      font-size: 0.875rem;
+    }
+  }
+}
