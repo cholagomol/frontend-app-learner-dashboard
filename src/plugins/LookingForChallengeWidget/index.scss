@@ -35,3 +35,25 @@
     border-radius: 4px;
   }
 }
+
+// Dark mode. The card above is white with a light border whatever the theme, while the theme turns
+// the title and the course code light, so in dark mode they were light text on a white card.
+// Use the same surface and border as the theme's course cards in "My Courses" (its own variables,
+// with the theme's current values as fallbacks).
+[data-paragon-theme-variant='dark'] #recommended-courses-widget {
+  .recommended-course-card {
+    background-color: var(--pgn-color-primary-light, #292a2c);
+    // !important: the card also carries Paragon's .border-light, which sets its colour that way
+    border-color: var(--pgn-color-primary-border, #777792) !important;
+
+    // .text-muted is a mid grey meant for the page background; on the card surface it is too faint
+    .card-text.text-muted {
+      color: #b9c0c4 !important;
+    }
+
+    &:hover {
+      border-color: var(--pgn-color-light-base, #dddfe2) !important;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+    }
+  }
+}
