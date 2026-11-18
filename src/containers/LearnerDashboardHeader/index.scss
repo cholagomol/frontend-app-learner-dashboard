@@ -57,6 +57,12 @@
   padding-bottom: .625rem;
 }
 
+// Phone header: the same 1px line as the desktop header instead of the theme's soft shadow
+// (Bootstrap's .shadow, which is !important)
+#root header.site-header-mobile.shadow {
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, .1) !important;
+}
+
 // The phone header is only 48px high: a 36px logo leaves 6px above and below
 #root header.site-header-mobile .logo {
   height: 36px;
