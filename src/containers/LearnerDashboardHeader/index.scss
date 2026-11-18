@@ -45,6 +45,28 @@
   }
 }
 
+// The link around the logo is as tall as the 40px picture, so the header centres it. With the
+// header's own 28px box the picture hung 12px below the box and ran over the line under the header.
+#root header .logo {
+  height: 40px;
+  top: 0;
+}
+
+// Desktop header stays 60px high: 10px above and below the logo instead of 16px
+#root header.site-header-desktop .logo {
+  padding-top: .625rem;
+  padding-bottom: .625rem;
+}
+
+// The phone header is only 48px high: a 36px logo leaves 6px above and below
+#root header.site-header-mobile .logo {
+  height: 36px;
+
+  img {
+    height: 36px !important;
+  }
+}
+
 // Fix mobile header menu disappearing/collapsing bug
 .site-header-mobile {
   display: flex !important;
